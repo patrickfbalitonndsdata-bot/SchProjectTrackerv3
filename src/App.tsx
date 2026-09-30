@@ -82,6 +82,31 @@ export default function App() {
   const [pendingProtectedAction, setPendingProtectedAction] = useState<'appsScript' | 'sheetSettings' | null>(null);
   const [codeCopiedBanner, setCodeCopiedBanner] = useState<boolean>(false);
   const [activeTab, setActiveTab] = useState<'entry' | 'mirror'>('entry');
+  const [outgoingTab, setOutgoingTab] = useState<'entry' | 'mirror' | null>(null);
+  const [isTransitioning, setIsTransitioning] = useState<boolean>(false);
+  const [transitionDirection, setTransitionDirection] = useState<'to-mirror' | 'to-entry'>('to-mirror');
+  const transitionTimerRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const handleSelectTab = (targetTab: 'entry' | 'mirror') => {
+    if (targetTab === activeTab && !isTransitioning) return;
+    if (isTransitioning) return;
+
+    const direction = targetTab === 'mirror' ? 'to-mirror' : 'to-entry';
+    setOutgoingTab(activeTab);
+    setActiveTab(targetTab);
+    setTransitionDirection(direction);
+    setIsTransitioning(true);
+
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+
+    if (transitionTimerRef.current) {
+      clearTimeout(transitionTimerRef.current);
+    }
+    transitionTimerRef.current = setTimeout(() => {
+      setIsTransitioning(false);
+      setOutgoingTab(null);
+    }, 530);
+  };
 
   // Reentry Warning Modal State
   const [reentryModalState, setReentryModalState] = useState<{
@@ -458,38 +483,38 @@ export default function App() {
   const isConnected = Boolean(sheetConfig.appsScriptUrl);
 
   const handleHeroLogPsu = () => {
-    setActiveTab('entry');
+    handleSelectTab('entry');
     setTimeout(() => {
       const formEl = document.getElementById('psu-form-section');
       if (formEl) {
         formEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
       }
-    }, 100);
+    }, 120);
   };
 
   const handleHeroExploreSheet = () => {
-    setActiveTab('mirror');
+    handleSelectTab('mirror');
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const handleHeroUpload = () => {
-    setActiveTab('entry');
+    handleSelectTab('entry');
     setTimeout(() => {
       const dropZone = document.getElementById('file-drop-zone');
       if (dropZone) {
         dropZone.scrollIntoView({ behavior: 'smooth', block: 'center' });
       }
-    }, 100);
+    }, 120);
   };
 
   const handleHeroViewRevisions = () => {
-    setActiveTab('entry');
+    handleSelectTab('entry');
     setTimeout(() => {
       const recentEl = document.getElementById('recent-sheet-section');
       if (recentEl) {
         recentEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
       }
-    }, 100);
+    }, 120);
   };
 
   return (
@@ -497,7 +522,7 @@ export default function App() {
       {/* Top Navbar */}
       <Navbar
         activeTab={activeTab}
-        onSelectTab={setActiveTab}
+        onSelectTab={handleSelectTab}
         appsScriptConnected={isConnected}
         onOpenAppsScriptSetup={handleRequestAppsScriptSetup}
         sheetTitle={sheetConfig.spreadsheetTitle || sheetConfig.sheetName}
@@ -507,180 +532,226 @@ export default function App() {
         onOpenSheetSettings={handleRequestSheetSettings}
       />
 
-      {/* Full-width Integrated Background Hero with Fading Gradient (Visible only on PSU Entry tab) */}
-      {activeTab === 'entry' && (
-        <HeroBanner
-          onLogPsuClick={handleHeroLogPsu}
-          onExploreSheetClick={handleHeroExploreSheet}
-          onUploadClick={handleHeroUpload}
-          onViewRevisionsClick={handleHeroViewRevisions}
-          appsScriptConnected={isConnected}
-          sheetUrl={sheetConfig.spreadsheetUrl}
-        />
-      )}
-
-      {/* Main Content Workspace Container - Smoothly floats over bottom fade when Hero is present */}
-      <main
-        className={`flex-1 max-w-7xl w-full mx-auto px-3 sm:px-6 lg:px-8 py-5 sm:py-6 space-y-6 relative z-10 ${
-          activeTab === 'entry' ? '-mt-6 sm:-mt-12' : 'pt-4 sm:pt-6'
-        }`}
-      >
-        {/* Toast alert */}
-        {toastMessage && (
-          <div className="bg-slate-900 dark:bg-[#0B1736] text-white px-4 py-3 rounded-xl shadow-xl border border-slate-700 dark:border-amber-400/40 flex items-center justify-between animate-in fade-in slide-in-from-top-2 duration-200">
-            <div className="flex items-center space-x-3 text-xs">
-              <CheckCircle2 className="w-4 h-4 text-emerald-400 dark:text-amber-400 shrink-0" />
-              <div>
-                <span className="font-bold tracking-wide uppercase">{toastMessage.title}: </span>
-                <span className="text-slate-300 dark:text-slate-200 font-normal">{toastMessage.desc}</span>
-              </div>
-            </div>
-            <button
-              onClick={() => setToastMessage(null)}
-              className="text-slate-400 hover:text-white text-xs ml-4"
-            >
-              &times;
-            </button>
+      {/* 3D Spherical Carousel Stage for Tab Transitions (Sliding circular sidewards like a sphere circling) */}
+      <div className="sphere-stage relative w-full flex-1">
+        {/* Orbital Sphere Horizon Glow when circling sidewards */}
+        {isTransitioning && (
+          <div className="pointer-events-none absolute inset-0 z-30 overflow-hidden flex items-center justify-center">
+            {/* Sphere Core Radial Glow */}
+            <div
+              className={`w-[500px] sm:w-[750px] h-[350px] sm:h-[500px] rounded-full blur-3xl opacity-25 dark:opacity-40 animate-pulse transition-opacity duration-300 ${
+                transitionDirection === 'to-mirror'
+                  ? 'bg-gradient-to-r from-amber-500/30 via-sky-500/30 to-blue-600/30'
+                  : 'bg-gradient-to-r from-blue-600/30 via-sky-500/30 to-amber-500/30'
+              }`}
+            />
+            {/* Equator Orbital Curve */}
+            <div
+              className={`absolute inset-x-0 top-1/4 h-[2px] opacity-40 blur-xs ${
+                transitionDirection === 'to-mirror'
+                  ? 'animate-sphere-orbit-left bg-gradient-to-r from-transparent via-amber-400 to-transparent'
+                  : 'animate-sphere-orbit-right bg-gradient-to-r from-transparent via-blue-400 dark:via-amber-400 to-transparent'
+              }`}
+            />
           </div>
         )}
 
-        {/* Apps Script Setup Banner if not configured */}
-        {!isConnected && (
-          <div className="p-4 sm:p-5 bg-gradient-to-r from-blue-900 via-blue-800 to-indigo-900 dark:from-[#060D1E] dark:via-[#0E1C3F] dark:to-[#142A5C] text-white border border-blue-700/60 dark:border-amber-400/30 rounded-2xl flex flex-col md:flex-row items-start md:items-center justify-between gap-4 shadow-md">
-            <div className="flex items-start gap-3.5">
-              <div className="p-2.5 bg-blue-950/80 dark:bg-[#081229] border border-blue-700/70 dark:border-amber-400/40 rounded-xl text-sky-300 dark:text-amber-400 shrink-0 mt-0.5">
-                <Zap className="w-5 h-5 text-sky-300 dark:text-amber-400 animate-pulse" />
-              </div>
-              <div>
-                <h4 className="text-xs font-bold uppercase tracking-wider text-white flex items-center gap-2">
-                  <span>Connect Google Apps Script Web App API</span>
-                  <span className="px-2 py-0.5 bg-blue-800/80 dark:bg-amber-400/20 text-blue-200 dark:text-amber-300 text-[9px] rounded-sm font-bold tracking-widest uppercase border border-blue-600 dark:border-amber-400/40">
-                    No Sign-In Required
-                  </span>
-                </h4>
-                <p className="text-xs text-blue-100/90 dark:text-slate-300 mt-1 leading-relaxed">
-                  The app communicates via: <strong className="text-white">React &rarr; Google Apps Script &rarr; Private Google Sheet</strong>.
-                  Paste the deployment script into your Google Sheet to enable direct automated logging.
-                </p>
-              </div>
-            </div>
+        {/* Tab 1: PSU Entry Pane (HeroBanner + Entry Workspace) */}
+        <div
+          className={`${
+            isTransitioning
+              ? outgoingTab === 'entry'
+                ? 'absolute inset-0 w-full animate-sphere-left-out pointer-events-none z-10'
+                : activeTab === 'entry'
+                ? 'relative w-full animate-sphere-right-in z-20'
+                : 'hidden'
+              : activeTab === 'entry'
+              ? 'relative w-full block'
+              : 'hidden'
+          }`}
+        >
+          <HeroBanner
+            onLogPsuClick={handleHeroLogPsu}
+            onExploreSheetClick={handleHeroExploreSheet}
+            onUploadClick={handleHeroUpload}
+            onViewRevisionsClick={handleHeroViewRevisions}
+            appsScriptConnected={isConnected}
+            sheetUrl={sheetConfig.spreadsheetUrl}
+          />
 
-            <div className="flex items-center gap-2 self-end md:self-center shrink-0">
-              <button
-                type="button"
-                onClick={handleCopyScriptFromBanner}
-                className="px-3.5 py-2 bg-blue-950/90 dark:bg-[#0B1736] border border-blue-600 dark:border-amber-400/50 hover:bg-blue-900 dark:hover:bg-[#102046] text-white dark:text-amber-300 rounded-lg text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 transition-all shadow-xs cursor-pointer"
-              >
-                {codeCopiedBanner ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5 text-blue-300 dark:text-amber-400" />}
-                <span>{codeCopiedBanner ? 'Copied Script!' : 'Copy Script'}</span>
-              </button>
-              <button
-                type="button"
-                onClick={handleRequestAppsScriptSetup}
-                className="px-4 py-2 bg-blue-500 hover:bg-blue-400 active:bg-blue-600 dark:bg-amber-500 dark:hover:bg-amber-400 dark:text-slate-950 dark:font-extrabold text-white rounded-lg text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 transition-all shadow-xs cursor-pointer"
-              >
-                <Zap className="w-3.5 h-3.5 text-white dark:text-slate-950" />
-                <span>Setup Web App URL</span>
-              </button>
-            </div>
-          </div>
-        )}
-
-        {/* Tab 1: PSU Entry Submission & Outlook/PDF Parser */}
-        {activeTab === 'entry' ? (
-          <div className="space-y-6">
-            {/* 2-Column Work Area: Left (Parser / Upload), Right (PSU Form) */}
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-              {/* Left Column: File Uploader & Email Details (5 cols on large) */}
-              <div className="lg:col-span-5 space-y-4">
-                <div className="bg-white dark:bg-[#0B1736] border border-slate-200/90 dark:border-[#1C3565] rounded-2xl p-5 sm:p-6 shadow-2xs">
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="flex items-center space-x-2.5">
-                      <div className="w-8 h-8 bg-blue-600 dark:bg-amber-500 text-white dark:text-slate-950 flex items-center justify-center rounded-lg shadow-xs">
-                        <Sparkles className="w-4 h-4 text-white dark:text-slate-950" />
-                      </div>
-                      <div>
-                        <h2 className="text-xs font-bold uppercase tracking-wider text-slate-900 dark:text-white font-display">
-                          Outlook Email &amp; PDF Parser
-                        </h2>
-                        <span className="text-[10px] text-slate-500 dark:text-slate-400 font-medium tracking-wide">
-                          Instant field extraction &amp; Page 1 OCR crop
-                        </span>
-                      </div>
-                    </div>
-                    <span className="text-[10px] text-blue-700 dark:text-amber-300 font-bold uppercase tracking-widest px-2.5 py-1 bg-blue-50 dark:bg-amber-400/20 rounded-md border border-blue-200 dark:border-amber-400/40 shadow-2xs">Step 1</span>
+          <main className="flex-1 max-w-7xl w-full mx-auto px-3 sm:px-6 lg:px-8 py-5 sm:py-6 space-y-6 relative z-10 -mt-6 sm:-mt-12">
+            {/* Toast alert */}
+            {toastMessage && (
+              <div className="bg-slate-900 dark:bg-[#0B1736] text-white px-4 py-3 rounded-xl shadow-xl border border-slate-700 dark:border-amber-400/40 flex items-center justify-between animate-in fade-in slide-in-from-top-2 duration-200">
+                <div className="flex items-center space-x-3 text-xs">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-400 dark:text-amber-400 shrink-0" />
+                  <div>
+                    <span className="font-bold tracking-wide uppercase">{toastMessage.title}: </span>
+                    <span className="text-slate-300 dark:text-slate-200 font-normal">{toastMessage.desc}</span>
                   </div>
+                </div>
+                <button
+                  onClick={() => setToastMessage(null)}
+                  className="text-slate-400 hover:text-white text-xs ml-4"
+                >
+                  &times;
+                </button>
+              </div>
+            )}
 
-                  <FileUploader
-                    onParsed={handleParsed}
-                    isParsing={isParsing}
-                    setIsParsing={setIsParsing}
-                    currentResult={currentResult}
+            {/* Apps Script Setup Banner if not configured */}
+            {!isConnected && (
+              <div className="p-4 sm:p-5 bg-gradient-to-r from-blue-900 via-blue-800 to-indigo-900 dark:from-[#060D1E] dark:via-[#0E1C3F] dark:to-[#142A5C] text-white border border-blue-700/60 dark:border-amber-400/30 rounded-2xl flex flex-col md:flex-row items-start md:items-center justify-between gap-4 shadow-md">
+                <div className="flex items-start gap-3.5">
+                  <div className="p-2.5 bg-blue-950/80 dark:bg-[#081229] border border-blue-700/70 dark:border-amber-400/40 rounded-xl text-sky-300 dark:text-amber-400 shrink-0 mt-0.5">
+                    <Zap className="w-5 h-5 text-sky-300 dark:text-amber-400 animate-pulse" />
+                  </div>
+                  <div>
+                    <h4 className="text-xs font-bold uppercase tracking-wider text-white flex items-center gap-2">
+                      <span>Connect Google Apps Script Web App API</span>
+                      <span className="px-2 py-0.5 bg-blue-800/80 dark:bg-amber-400/20 text-blue-200 dark:text-amber-300 text-[9px] rounded-sm font-bold tracking-widest uppercase border border-blue-600 dark:border-amber-400/40">
+                        No Sign-In Required
+                      </span>
+                    </h4>
+                    <p className="text-xs text-blue-100/90 dark:text-slate-300 mt-1 leading-relaxed">
+                      The app communicates via: <strong className="text-white">React &rarr; Google Apps Script &rarr; Private Google Sheet</strong>.
+                      Paste the deployment script into your Google Sheet to enable direct automated logging.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2 self-end md:self-center shrink-0">
+                  <button
+                    type="button"
+                    onClick={handleCopyScriptFromBanner}
+                    className="px-3.5 py-2 bg-blue-950/90 dark:bg-[#0B1736] border border-blue-600 dark:border-amber-400/50 hover:bg-blue-900 dark:hover:bg-[#102046] text-white dark:text-amber-300 rounded-lg text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 transition-all shadow-xs cursor-pointer"
+                  >
+                    {codeCopiedBanner ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5 text-blue-300 dark:text-amber-400" />}
+                    <span>{codeCopiedBanner ? 'Copied Script!' : 'Copy Script'}</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleRequestAppsScriptSetup}
+                    className="px-4 py-2 bg-blue-500 hover:bg-blue-400 active:bg-blue-600 dark:bg-amber-500 dark:hover:bg-amber-400 dark:text-slate-950 dark:font-extrabold text-white rounded-lg text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 transition-all shadow-xs cursor-pointer"
+                  >
+                    <Zap className="w-3.5 h-3.5 text-white dark:text-slate-950" />
+                    <span>Setup Web App URL</span>
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* PSU Entry Submission & Outlook/PDF Parser */}
+            <div className="space-y-6">
+              {/* 2-Column Work Area: Left (Parser / Upload), Right (PSU Form) */}
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+                {/* Left Column: File Uploader & Email Details (5 cols on large) */}
+                <div className="lg:col-span-5 space-y-4">
+                  <div className="bg-white dark:bg-[#0B1736] border border-slate-200/90 dark:border-[#1C3565] rounded-2xl p-5 sm:p-6 shadow-2xs">
+                    <div className="flex items-center justify-between mb-4">
+                      <div className="flex items-center space-x-2.5">
+                        <div className="w-8 h-8 bg-blue-600 dark:bg-amber-500 text-white dark:text-slate-950 flex items-center justify-center rounded-lg shadow-xs">
+                          <Sparkles className="w-4 h-4 text-white dark:text-slate-950" />
+                        </div>
+                        <div>
+                          <h2 className="text-xs font-bold uppercase tracking-wider text-slate-900 dark:text-white font-display">
+                            Outlook Email &amp; PDF Parser
+                          </h2>
+                          <span className="text-[10px] text-slate-500 dark:text-slate-400 font-medium tracking-wide">
+                            Instant field extraction &amp; Page 1 OCR crop
+                          </span>
+                        </div>
+                      </div>
+                      <span className="text-[10px] text-blue-700 dark:text-amber-300 font-bold uppercase tracking-widest px-2.5 py-1 bg-blue-50 dark:bg-amber-400/20 rounded-md border border-blue-200 dark:border-amber-400/40 shadow-2xs">Step 1</span>
+                    </div>
+
+                    <FileUploader
+                      onParsed={handleParsed}
+                      isParsing={isParsing}
+                      setIsParsing={setIsParsing}
+                      currentResult={currentResult}
+                    />
+                  </div>
+                </div>
+
+                {/* Right Column: Submission Form (7 cols on large) */}
+                <div id="psu-form-section" className="lg:col-span-7 scroll-mt-20">
+                  <PsuForm
+                    formData={formData}
+                    onChange={setFormData}
+                    onReset={handleResetForm}
+                    sheetConfig={sheetConfig}
+                    userEmail={userEmail}
+                    onSuccessAppend={handleSuccessAppend}
+                    onOpenAppsScriptSetup={handleRequestAppsScriptSetup}
+                    onSyncSheetConfig={handleSaveSheetConfig}
+                    recentEntries={DEFAULT_INITIAL_ENTRIES}
+                    attachments={currentResult?.metadata?.attachments || []}
+                    onRequestReentryConfirm={requestReentryConfirm}
+                    confirmedProjectsRef={confirmedProjectsRef}
+                    onShowToast={setToastMessage}
                   />
                 </div>
               </div>
 
-              {/* Right Column: Submission Form (7 cols on large) */}
-              <div id="psu-form-section" className="lg:col-span-7 scroll-mt-20">
-                <PsuForm
-                  formData={formData}
-                  onChange={setFormData}
-                  onReset={handleResetForm}
-                  sheetConfig={sheetConfig}
-                  userEmail={userEmail}
-                  onSuccessAppend={handleSuccessAppend}
-                  onOpenAppsScriptSetup={handleRequestAppsScriptSetup}
-                  onSyncSheetConfig={handleSaveSheetConfig}
-                  recentEntries={DEFAULT_INITIAL_ENTRIES}
-                  attachments={currentResult?.metadata?.attachments || []}
-                  onRequestReentryConfirm={requestReentryConfirm}
-                  confirmedProjectsRef={confirmedProjectsRef}
-                  onShowToast={setToastMessage}
-                />
-              </div>
-            </div>
-
-            {/* Bottom Section: Quick Preview of Sheet with Switch to Full Mirror */}
-            <section id="recent-sheet-section" className="pt-2 scroll-mt-20">
-              <div className="flex items-center justify-between mb-3 px-1">
-                <div>
-                  <h3 className="text-xs font-bold uppercase tracking-wider text-slate-900 dark:text-white flex items-center gap-2">
-                    <span>Recent Sheet Activity</span>
-                    <span className="px-2 py-0.5 text-[9px] font-bold bg-blue-50 dark:bg-amber-400/20 text-blue-700 dark:text-amber-300 rounded-md border border-blue-200 dark:border-amber-400/40 uppercase font-mono">
-                      Audit Stream
-                    </span>
-                  </h3>
-                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Quick view of recently logged entries in Google Sheets</p>
+              {/* Bottom Section: Quick Preview of Sheet with Switch to Full Mirror */}
+              <section id="recent-sheet-section" className="pt-2 scroll-mt-20">
+                <div className="flex items-center justify-between mb-3 px-1">
+                  <div>
+                    <h3 className="text-xs font-bold uppercase tracking-wider text-slate-900 dark:text-white flex items-center gap-2">
+                      <span>Recent Sheet Activity</span>
+                      <span className="px-2 py-0.5 text-[9px] font-bold bg-blue-50 dark:bg-amber-400/20 text-blue-700 dark:text-amber-300 rounded-md border border-blue-200 dark:border-amber-400/40 uppercase font-mono">
+                        Audit Stream
+                      </span>
+                    </h3>
+                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Quick view of recently logged entries in Google Sheets</p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => handleSelectTab('mirror')}
+                    className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-bold uppercase tracking-wider text-blue-700 hover:text-white dark:text-amber-300 dark:hover:text-slate-950 bg-white hover:bg-blue-600 dark:bg-[#0B1736] dark:hover:bg-amber-500 border border-blue-300 hover:border-blue-600 dark:border-amber-400/40 dark:hover:border-amber-500 rounded-lg transition-all shadow-2xs group cursor-pointer"
+                  >
+                    <FileSpreadsheet className="w-3.5 h-3.5 text-blue-600 dark:text-amber-400 group-hover:text-white dark:group-hover:text-slate-950 transition-colors" />
+                    <span>Open Full Sheet Mirror Viewer Tab &rarr;</span>
+                  </button>
                 </div>
-                <button
-                  type="button"
-                  onClick={() => setActiveTab('mirror')}
-                  className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-bold uppercase tracking-wider text-blue-700 hover:text-white dark:text-amber-300 dark:hover:text-slate-950 bg-white hover:bg-blue-600 dark:bg-[#0B1736] dark:hover:bg-amber-500 border border-blue-300 hover:border-blue-600 dark:border-amber-400/40 dark:hover:border-amber-500 rounded-lg transition-all shadow-2xs group cursor-pointer"
-                >
-                  <FileSpreadsheet className="w-3.5 h-3.5 text-blue-600 dark:text-amber-400 group-hover:text-white dark:group-hover:text-slate-950 transition-colors" />
-                  <span>Open Full Sheet Mirror Viewer Tab &rarr;</span>
-                </button>
-              </div>
-              <RecentEntries
+                <RecentEntries
+                  sheetConfig={sheetConfig}
+                  refreshTrigger={refreshTrigger}
+                  onOpenAppsScriptSetup={handleRequestAppsScriptSetup}
+                  onViewAllInMirror={() => handleSelectTab('mirror')}
+                />
+              </section>
+            </div>
+          </main>
+        </div>
+
+        {/* Tab 2: Full Google Sheet Mirror Viewer Pane */}
+        <div
+          className={`${
+            isTransitioning
+              ? outgoingTab === 'mirror'
+                ? 'absolute inset-0 w-full animate-sphere-right-out pointer-events-none z-10'
+                : activeTab === 'mirror'
+                ? 'relative w-full animate-sphere-left-in z-20'
+                : 'hidden'
+              : activeTab === 'mirror'
+              ? 'relative w-full block'
+              : 'hidden'
+          }`}
+        >
+          <main className="flex-1 max-w-7xl w-full mx-auto px-3 sm:px-6 lg:px-8 py-5 sm:py-6 space-y-6 relative z-10 pt-4 sm:pt-6">
+            <section className="space-y-4">
+              <SheetMirrorViewer
                 sheetConfig={sheetConfig}
                 refreshTrigger={refreshTrigger}
                 onOpenAppsScriptSetup={handleRequestAppsScriptSetup}
-                onViewAllInMirror={() => setActiveTab('mirror')}
+                onSwitchToEntryTab={() => handleSelectTab('entry')}
               />
             </section>
-          </div>
-        ) : (
-          /* Tab 2: Full Google Sheet Mirror Viewer */
-          <section className="space-y-4">
-            <SheetMirrorViewer
-              sheetConfig={sheetConfig}
-              refreshTrigger={refreshTrigger}
-              onOpenAppsScriptSetup={handleRequestAppsScriptSetup}
-              onSwitchToEntryTab={() => setActiveTab('entry')}
-            />
-          </section>
-        )}
-      </main>
+          </main>
+        </div>
+      </div>
 
       {/* Unified Editorial Light Blue / Slate Footer */}
       <footer className="mt-16 border-t border-blue-100 dark:border-[#1C3565] bg-white/90 dark:bg-[#081229] backdrop-blur-md text-slate-600 dark:text-slate-400 py-6">
