@@ -212,7 +212,7 @@ export const ReentryWarningModal: React.FC<ReentryWarningModalProps> = ({
                       </div>
                     </div>
                     <p className="text-[10px] text-blue-700/80 mt-2 italic border-t border-blue-100 pt-1">
-                      Retains current/recent version ({currentVer}) as a correction.
+                      Retains recent version ({currentVer}) as a correction.
                     </p>
                   </div>
                 </div>
