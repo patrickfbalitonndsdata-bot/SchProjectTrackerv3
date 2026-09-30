@@ -230,6 +230,7 @@ function doGet(e) {
       var sheet = getTargetSheet(ss, requestedSheetName);
       var data = sheet.getDataRange().getValues();
       var count = 0;
+      var lastVersion = "";
 
       for (var j = 1; j < data.length; j++) {
         var cellVal = (data[j][6] || "").toString().trim().toLowerCase();
@@ -238,22 +239,38 @@ function doGet(e) {
           cellVal.replace(/[^a-z0-9]/g, "") === cleanPrjAlphaNum
         ) {
           count++;
+          if (data[j][7]) {
+            lastVersion = data[j][7].toString().trim();
+          }
         }
       }
 
       var isSouthCentral = region === "south central";
       var nextVersion = "Initial";
+      var currentVersion = "Initial";
       if (count === 0) {
         nextVersion = "Initial";
+        currentVersion = "Initial";
+      } else if (lastVersion) {
+        currentVersion = lastVersion;
+        if (isSouthCentral) {
+          nextVersion = "v" + count;
+        } else {
+          nextVersion = "v" + (count + 1);
+        }
       } else if (isSouthCentral) {
         nextVersion = "v" + count;
+        currentVersion = count <= 1 ? "Initial" : "v" + (count - 1);
       } else {
         nextVersion = "v" + (count + 1);
+        currentVersion = count <= 1 ? "Initial" : "v" + count;
       }
 
       return ContentService.createTextOutput(JSON.stringify({
         status: "success",
         version: nextVersion,
+        currentVersion: currentVersion,
+        lastVersion: lastVersion,
         existingCount: count,
         spreadsheetName: ss.getName(),
         sheetName: sheet.getName()
@@ -263,6 +280,8 @@ function doGet(e) {
         status: "error",
         message: err.toString(),
         version: "Initial",
+        currentVersion: "Initial",
+        lastVersion: "",
         existingCount: 0
       })).setMimeType(ContentService.MimeType.JSON);
     }
@@ -685,10 +704,13 @@ export async function calculateProjectVersionViaAppsScript(
     const result = await res.json();
     if (result.status === 'success') {
       const existingCount = typeof result.existingCount === 'number' ? result.existingCount : 0;
+      const currentVersion =
+        result.currentVersion ||
+        getCurrentProjectVersion(existingCount, region, result.lastVersion);
       return {
-        version: formatProjectVersion(existingCount, region),
+        version: result.version || formatProjectVersion(existingCount, region),
         existingCount: existingCount,
-        currentVersion: getCurrentProjectVersion(existingCount, region),
+        currentVersion,
       };
     }
     return {
