@@ -1,37 +1,32 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 @theme {
   --font-sans: "Plus Jakarta Sans", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   --font-display: "Syne", "Plus Jakarta Sans", system-ui, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
 
-  /* Modern High-End Editorial Palette Tokens */
-  --color-mcc-chartreuse: #C1A84C;
-  --color-mcc-chartreuse-light: #DFC772;
-  --color-mcc-chartreuse-dark: #9F8735;
+  /* Navy Blue Palette Tokens */
+  --color-navy-950: #060D1E;
+  --color-navy-900: #0B1736;
+  --color-navy-850: #102046;
+  --color-navy-800: #162C5C;
+  --color-navy-700: #1C3565;
+  --color-navy-600: #23427D;
+  --color-navy-border: #1C3565;
+  --color-navy-border-subtle: #14274C;
 
-  --color-mcc-lime: #E5D0A1;
-  --color-mcc-lime-light: #F4E8D0;
-  --color-mcc-lime-dark: #C9B27E;
-
-  --color-mcc-butter: #FDEDD4;
-  --color-mcc-butter-light: #FFF8EE;
-  --color-mcc-butter-dark: #F3DCB7;
-
-  --color-mcc-sky: #B8C6C9;
-  --color-mcc-sky-light: #DDE5E7;
-  --color-mcc-sky-dark: #8CA0A3;
-
-  --color-mcc-emerald: #334E3D;
-  --color-mcc-emerald-light: #44654F;
-  --color-mcc-emerald-dark: #223529;
-  --color-mcc-emerald-deep: #16241C;
-
-  --color-mcc-canvas: #F4F7FB;
-  --color-mcc-canvas-subtle: #EBF1F7;
-  --color-mcc-card: #FFFFFF;
-  --color-mcc-border: #DDE5ED;
-  --color-mcc-border-strong: #CBD5E1;
+  /* Gold / Yellow Palette Tokens */
+  --color-gold-50: #FEFCE8;
+  --color-gold-100: #FEF9C3;
+  --color-gold-200: #FEF08A;
+  --color-gold-300: #FDE047;
+  --color-gold-400: #FACC15;
+  --color-gold-500: #EAB308;
+  --color-gold-600: #CA8A04;
+  --color-gold-amber: #F59E0B;
+  --color-gold-amber-hover: #FBBF24;
 }
 
 body {
@@ -39,8 +34,375 @@ body {
   color: #0F172A;
   font-family: "Plus Jakarta Sans", system-ui, -apple-system, sans-serif;
   -webkit-font-smoothing: antialiased;
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 .font-display {
   font-family: var(--font-display);
+}
+
+/* ==========================================================================
+   NAVY BLUE & GOLD / YELLOW DARK MODE PALETTE
+   Applies across all parts, tabs, buttons, inputs, tables, and texts
+   ========================================================================== */
+
+html.dark {
+  color-scheme: dark;
+  background-color: #060D1E;
+}
+
+html.dark body {
+  background-color: #060D1E;
+  color: #F8FAFC;
+}
+
+/* Base Surfaces & Cards in Dark Mode */
+.dark .bg-white {
+  background-color: #0B1736 !important;
+}
+
+.dark .bg-white\/95,
+.dark .bg-white\/90,
+.dark .bg-white\/85,
+.dark .bg-white\/80 {
+  background-color: rgba(11, 23, 54, 0.95) !important;
+}
+
+.dark .bg-slate-50,
+.dark .bg-slate-50\/70,
+.dark .bg-slate-50\/80 {
+  background-color: #0F1F44 !important;
+}
+
+.dark .bg-slate-100,
+.dark .bg-slate-100\/90,
+.dark .bg-slate-100\/80 {
+  background-color: #12244E !important;
+}
+
+.dark .bg-blue-50,
+.dark .bg-blue-50\/70,
+.dark .bg-blue-50\/80,
+.dark .bg-blue-50\/90 {
+  background-color: #11244E !important;
+}
+
+.dark .bg-blue-100,
+.dark .bg-blue-100\/80,
+.dark .bg-blue-100\/90 {
+  background-color: #162E63 !important;
+}
+
+/* Borders in Dark Mode (Navy hairline dividers) */
+.dark .border-slate-200,
+.dark .border-slate-200\/90,
+.dark .border-slate-300,
+.dark .border-slate-100,
+.dark .border-blue-100,
+.dark .border-blue-100\/70,
+.dark .border-blue-100\/80,
+.dark .border-blue-200,
+.dark .border-blue-200\/80,
+.dark .border-blue-200\/90,
+.dark .border-blue-300 {
+  border-color: #1C3565 !important;
+}
+
+.dark .divide-slate-200 > :not([hidden]) ~ :not([hidden]),
+.dark .divide-slate-100 > :not([hidden]) ~ :not([hidden]) {
+  border-color: #162A50 !important;
+}
+
+/* Neutral Surfaces & Dividers in Dark Mode */
+.dark .bg-neutral-950,
+.dark .bg-neutral-900 {
+  background-color: #060D1E !important;
+}
+
+.dark .bg-neutral-100,
+.dark .bg-neutral-200 {
+  background-color: #12244E !important;
+  color: #CBD5E1 !important;
+}
+
+.dark .bg-neutral-50 {
+  background-color: #0F1F44 !important;
+}
+
+.dark .border-neutral-100,
+.dark .border-neutral-200,
+.dark .border-neutral-300,
+.dark .border-neutral-400 {
+  border-color: #1C3565 !important;
+}
+
+.dark .hover\:bg-neutral-50:hover,
+.dark .hover\:bg-neutral-100:hover {
+  background-color: #162C5C !important;
+}
+
+/* Typographic Hierarchy in Dark Mode (Navy & Gold/Yellow) */
+.dark .text-slate-900,
+.dark .text-slate-800,
+.dark .text-slate-950,
+.dark .text-blue-950,
+.dark .text-neutral-950,
+.dark .text-neutral-900,
+.dark .text-neutral-800 {
+  color: #F8FAFC !important;
+}
+
+.dark .text-slate-700,
+.dark .text-slate-600,
+.dark .text-neutral-700,
+.dark .text-neutral-600 {
+  color: #CBD5E1 !important;
+}
+
+.dark .text-slate-500,
+.dark .text-slate-400,
+.dark .text-neutral-500,
+.dark .text-neutral-400 {
+  color: #94A3B8 !important;
+}
+
+.dark .text-blue-900 {
+  color: #FDE047 !important;
+}
+
+.dark .text-blue-600,
+.dark .text-blue-700,
+.dark .text-blue-800,
+.dark .text-sky-600 {
+  color: #FBBF24 !important; /* Rich warm gold accent text */
+}
+
+/* Interactive Buttons: Primary Action (Gold / Yellow Buttons with Navy Text) */
+.dark .bg-blue-600 {
+  background-color: #F59E0B !important;
+  color: #060D1E !important;
+  font-weight: 700 !important;
+  border-color: #F59E0B !important;
+}
+
+.dark .bg-blue-600:hover,
+.dark .hover\:bg-blue-700:hover,
+.dark .bg-blue-700 {
+  background-color: #FBBF24 !important;
+  color: #060D1E !important;
+  box-shadow: 0 0 15px rgba(245, 158, 11, 0.3) !important;
+}
+
+.dark .bg-blue-600 svg,
+.dark .bg-blue-600 path {
+  color: #060D1E !important;
+  stroke: #060D1E !important;
+}
+
+.dark .bg-blue-500 {
+  background-color: #EAB308 !important;
+  color: #060D1E !important;
+  font-weight: 700 !important;
+}
+
+.dark .bg-blue-500:hover {
+  background-color: #FACC15 !important;
+  color: #060D1E !important;
+}
+
+.dark .hover\:bg-blue-50:hover,
+.dark .hover\:bg-blue-50\/70:hover,
+.dark .hover\:bg-blue-50\/80:hover {
+  background-color: #14274C !important;
+  color: #FDE047 !important;
+}
+
+.dark .hover\:bg-slate-100:hover,
+.dark .hover\:bg-slate-50:hover {
+  background-color: #12244E !important;
+}
+
+/* Form Controls (Inputs, Selects, Dropdowns, Date/Time pickers) */
+.dark input:not([type="checkbox"]):not([type="radio"]),
+.dark select,
+.dark textarea {
+  background-color: #081229 !important;
+  color: #F8FAFC !important;
+  border-color: #1C3565 !important;
+}
+
+.dark input:not([type="checkbox"]):not([type="radio"])::placeholder,
+.dark textarea::placeholder {
+  color: #64748B !important;
+}
+
+.dark input:focus,
+.dark select:focus,
+.dark textarea:focus {
+  border-color: #F59E0B !important;
+  box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.25) !important;
+  outline: none !important;
+}
+
+.dark input:disabled,
+.dark select:disabled,
+.dark textarea:disabled,
+.dark button:disabled,
+.dark button[disabled] {
+  background-color: #060E21 !important;
+  color: #64748B !important;
+  border-color: #14274C !important;
+  cursor: not-allowed !important;
+  box-shadow: none !important;
+}
+
+/* Select option elements */
+.dark select option {
+  background-color: #081229 !important;
+  color: #F8FAFC !important;
+}
+
+/* Calendar icon / Date picker indicator in dark mode */
+.dark input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(0.8) sepia(1) saturate(5) hue-rotate(5deg);
+  cursor: pointer;
+}
+
+/* Navigation Dock & Tabs */
+.dark nav {
+  background-color: #0B1736 !important;
+  border-color: #1C3565 !important;
+}
+
+.dark nav button {
+  color: #CBD5E1 !important;
+}
+
+.dark nav button:hover {
+  color: #FDE047 !important;
+  background-color: rgba(22, 46, 92, 0.6) !important;
+}
+
+.dark nav button.bg-blue-600 {
+  background-color: #F59E0B !important;
+  color: #060D1E !important;
+  font-weight: 700 !important;
+  box-shadow: 0 2px 8px rgba(245, 158, 11, 0.35) !important;
+}
+
+.dark nav button.bg-blue-600 svg {
+  color: #060D1E !important;
+  stroke: #060D1E !important;
+}
+
+/* Table Elements (RecentEntries & SheetMirrorViewer) */
+.dark table thead,
+.dark table thead tr {
+  background-color: #081229 !important;
+}
+
+.dark table thead th {
+  color: #FBBF24 !important; /* Gold table headers */
+  border-color: #1C3565 !important;
+}
+
+.dark table tbody tr {
+  background-color: #0B1736 !important;
+  border-color: #14274C !important;
+}
+
+.dark table tbody tr:hover {
+  background-color: #102148 !important;
+}
+
+.dark table tbody td {
+  border-color: #14274C !important;
+  color: #E2E8F0 !important;
+}
+
+/* Status Badges, Chips & Pills (Navy background + Gold border & text) */
+.dark .bg-blue-50.text-blue-700,
+.dark .bg-blue-50.text-blue-800 {
+  background-color: rgba(245, 158, 11, 0.12) !important;
+  color: #FDE047 !important;
+  border-color: rgba(245, 158, 11, 0.35) !important;
+}
+
+/* Modals & Backdrop Overlays */
+.dark .fixed.inset-0.bg-slate-900\/60,
+.dark .fixed.inset-0.bg-black\/50,
+.dark .fixed.inset-0.bg-black\/60,
+.dark .fixed.inset-0.bg-black\/70 {
+  background-color: rgba(4, 9, 23, 0.82) !important;
+  backdrop-filter: blur(5px) !important;
+}
+
+/* Alert Boxes & Notifications in Dark Mode */
+.dark .bg-amber-50 {
+  background-color: rgba(245, 158, 11, 0.12) !important;
+  border-color: rgba(245, 158, 11, 0.35) !important;
+}
+
+.dark .text-amber-800,
+.dark .text-amber-900,
+.dark .text-amber-700 {
+  color: #FDE047 !important;
+}
+
+.dark .bg-red-50,
+.dark .bg-rose-50 {
+  background-color: rgba(239, 68, 68, 0.12) !important;
+  border-color: rgba(239, 68, 68, 0.35) !important;
+}
+
+.dark .text-red-700,
+.dark .text-red-800,
+.dark .text-rose-700,
+.dark .text-rose-800 {
+  color: #FCA5A5 !important;
+}
+
+.dark .bg-emerald-50,
+.dark .bg-green-50 {
+  background-color: rgba(16, 185, 129, 0.12) !important;
+  border-color: rgba(16, 185, 129, 0.35) !important;
+}
+
+/* Code Blocks & Preformatted Text */
+.dark pre,
+.dark code:not(.inline-code) {
+  background-color: #060D1E !important;
+  border-color: #1C3565 !important;
+  color: #FDE047 !important;
+}
+
+/* Header & Footer */
+.dark header {
+  background-color: rgba(11, 23, 54, 0.95) !important;
+  border-color: #1C3565 !important;
+}
+
+.dark footer {
+  background-color: #0B1736 !important;
+  border-color: #1C3565 !important;
+  color: #CBD5E1 !important;
+}
+
+/* Scrollbars in Dark Mode (Navy track with Gold hover) */
+.dark ::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.dark ::-webkit-scrollbar-track {
+  background: #060D1E;
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: #1C3565;
+  border-radius: 4px;
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: #F59E0B;
 }
