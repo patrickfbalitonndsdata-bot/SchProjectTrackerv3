@@ -65,29 +65,29 @@ export const ReentryWarningModal: React.FC<ReentryWarningModalProps> = ({
       aria-modal="true"
       aria-labelledby="reentry-modal-title"
     >
-      <div className="bg-white rounded-2xl shadow-2xl border border-amber-300 w-full max-w-xl overflow-hidden transform transition-all animate-in zoom-in-95 duration-200">
+      <div className="bg-white dark:bg-[#0B1736] rounded-2xl shadow-2xl border border-amber-300 dark:border-amber-400/50 w-full max-w-xl overflow-hidden transform transition-all animate-in zoom-in-95 duration-200">
         {/* Warning Header */}
-        <div className="bg-gradient-to-r from-amber-500/10 via-amber-500/5 to-amber-500/15 border-b border-amber-200 px-6 py-4 flex items-start gap-3.5">
+        <div className="bg-gradient-to-r from-amber-500/10 via-amber-500/5 to-amber-500/15 dark:from-amber-950/40 dark:via-amber-900/20 dark:to-amber-950/30 border-b border-amber-200 dark:border-[#1C3565] px-6 py-4 flex items-start gap-3.5">
           <div className="w-10 h-10 rounded-xl bg-amber-500 text-white flex items-center justify-center shrink-0 shadow-md shadow-amber-500/20">
             <AlertTriangle className="w-5 h-5 text-amber-50 stroke-[2.5]" />
           </div>
           <div className="flex-1 min-w-0">
-            <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-amber-100 text-amber-900 border border-amber-300 mb-1">
+            <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-amber-100 dark:bg-amber-400/20 text-amber-900 dark:text-amber-300 border border-amber-300 dark:border-amber-400/40 mb-1">
               <span>Existing Record Detected</span>
             </div>
-            <h2 id="reentry-modal-title" className="text-base font-bold text-slate-900 leading-tight">
+            <h2 id="reentry-modal-title" className="text-base font-bold text-slate-900 dark:text-white leading-tight">
               {isMultiple
                 ? `${projects.length} Existing Project Numbers Found in Tracker`
                 : `Project ${primary.projectNumber} Already Exists in Sheets`}
             </h2>
-            <p className="text-xs text-slate-600 mt-1 leading-relaxed">
-              Choose whether to advance to a <strong className="text-amber-800">New Version</strong> or log as <strong className="text-blue-800">For Correction</strong> (retains current version):
+            <p className="text-xs text-slate-600 dark:text-slate-300 mt-1 leading-relaxed">
+              Choose whether to advance to a <strong className="text-amber-800 dark:text-amber-400">New Version</strong> or log as <strong className="text-blue-800 dark:text-amber-300">For Correction</strong> (retains current version):
             </p>
           </div>
           <button
             type="button"
             onClick={onCancel}
-            className="text-slate-400 hover:text-slate-700 p-1 rounded-lg transition-colors cursor-pointer"
+            className="text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 p-1 rounded-lg transition-colors cursor-pointer"
             title="Cancel"
             aria-label="Close modal"
           >
@@ -222,13 +222,13 @@ export const ReentryWarningModal: React.FC<ReentryWarningModalProps> = ({
         </div>
 
         {/* Modal Footer Actions */}
-        <div className="bg-slate-50 border-t border-slate-200 px-5 py-4 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5">
+        <div className="bg-slate-50 dark:bg-[#081229] border-t border-slate-200 dark:border-[#1C3565] px-5 py-4 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5">
           <button
             type="button"
             onClick={onCancel}
-            className="px-4 py-2 text-xs font-bold text-slate-700 hover:text-slate-900 bg-white hover:bg-slate-100 rounded-xl border border-slate-300 shadow-2xs transition-all flex items-center justify-center gap-1.5 cursor-pointer order-last sm:order-first"
+            className="px-4 py-2 text-xs font-bold text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white bg-white dark:bg-[#0B1736] hover:bg-slate-100 dark:hover:bg-[#102046] rounded-xl border border-slate-300 dark:border-[#1C3565] shadow-2xs transition-all flex items-center justify-center gap-1.5 cursor-pointer order-last sm:order-first"
           >
-            <Ban className="w-3.5 h-3.5 text-slate-500" />
+            <Ban className="w-3.5 h-3.5 text-slate-500 dark:text-slate-400" />
             <span>Cancel</span>
           </button>
 
@@ -236,9 +236,9 @@ export const ReentryWarningModal: React.FC<ReentryWarningModalProps> = ({
             <button
               type="button"
               onClick={handleForCorrection}
-              className="px-4 py-2.5 text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 active:bg-blue-800 rounded-xl shadow-xs transition-all flex items-center justify-center gap-1.5 cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+              className="px-4 py-2.5 text-xs font-bold text-white dark:text-slate-950 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 dark:bg-amber-400 dark:hover:bg-amber-300 dark:font-extrabold rounded-xl shadow-xs transition-all flex items-center justify-center gap-1.5 cursor-pointer focus:outline-none focus:ring-2 focus:ring-amber-500"
             >
-              <FileEdit className="w-3.5 h-3.5 text-white" />
+              <FileEdit className="w-3.5 h-3.5 text-white dark:text-slate-950" />
               <span>
                 {isMultiple
                   ? `For Correction (Retain Current Ver)`
@@ -249,9 +249,9 @@ export const ReentryWarningModal: React.FC<ReentryWarningModalProps> = ({
             <button
               type="button"
               onClick={handleNewVersion}
-              className="px-4 py-2.5 text-xs font-bold text-white bg-amber-600 hover:bg-amber-700 active:bg-amber-800 rounded-xl shadow-xs transition-all flex items-center justify-center gap-1.5 cursor-pointer focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2"
+              className="px-4 py-2.5 text-xs font-bold text-white dark:text-slate-950 bg-amber-600 hover:bg-amber-700 active:bg-amber-800 dark:bg-amber-500 dark:hover:bg-amber-400 dark:font-extrabold rounded-xl shadow-xs transition-all flex items-center justify-center gap-1.5 cursor-pointer focus:outline-none focus:ring-2 focus:ring-amber-500"
             >
-              <GitBranch className="w-3.5 h-3.5 text-white" />
+              <GitBranch className="w-3.5 h-3.5 text-white dark:text-slate-950" />
               <span>
                 {isMultiple
                   ? `New Version (${projects.length} Revisions)`
