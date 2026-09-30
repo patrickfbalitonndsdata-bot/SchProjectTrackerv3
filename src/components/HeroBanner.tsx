@@ -1,222 +1,210 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
-  ArrowRight,
-  FileSpreadsheet,
-  Sparkles,
-  Zap,
-  CheckCircle2,
+  Clock,
   ExternalLink,
+  Settings,
+  Lock,
+  FileSpreadsheet,
+  FileText,
+  Sun,
+  Moon,
 } from 'lucide-react';
-import lightBlueHeroImg from '../assets/images/light_blue_hero_1790694964629.jpg';
-import blueParserImg from '../assets/images/blue_parser_card_1790694984016.jpg';
-import blueSheetImg from '../assets/images/blue_sheet_card_1790695001866.jpg';
-import heroImg from '../assets/images/hero_banner_transport_1790102708525.jpg';
-import { FIXED_SPREADSHEET_URL } from '../lib/sheetsApi';
+import { formatToManila } from '../lib/dateUtils';
+import { FIXED_SPREADSHEET_URL, FIXED_SHEET_NAME } from '../lib/sheetsApi';
+import { useTheme } from '../context/ThemeContext';
 
-interface HeroBannerProps {
-  onLogPsuClick: () => void;
-  onExploreSheetClick: () => void;
-  onUploadClick: () => void;
-  onViewRevisionsClick: () => void;
+interface NavbarProps {
+  activeTab: 'entry' | 'mirror';
+  onSelectTab: (tab: 'entry' | 'mirror') => void;
   appsScriptConnected: boolean;
+  onOpenAppsScriptSetup: () => void;
+  sheetTitle?: string;
   sheetUrl?: string;
+  userEmail?: string;
+  onChangeUserEmail?: (email: string) => void;
+  onOpenSheetSettings?: () => void;
 }
 
-export const HeroBanner: React.FC<HeroBannerProps> = ({
-  onLogPsuClick,
-  onExploreSheetClick,
-  onUploadClick,
-  onViewRevisionsClick,
+export const Navbar: React.FC<NavbarProps> = ({
+  activeTab,
+  onSelectTab,
   appsScriptConnected,
+  onOpenAppsScriptSetup,
+  sheetTitle,
   sheetUrl,
+  onOpenSheetSettings,
 }) => {
+  const { isDark, toggleTheme } = useTheme();
+  const [manilaClock, setManilaClock] = useState<string>('');
+  const [isScrolled, setIsScrolled] = useState<boolean>(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 15);
+    };
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  useEffect(() => {
+    const updateClock = () => {
+      const { dateStr, timeStr } = formatToManila(new Date());
+      setManilaClock(`${dateStr} ${timeStr} MNL`);
+    };
+    updateClock();
+    const timer = setInterval(updateClock, 1000);
+    return () => clearInterval(timer);
+  }, []);
+
   return (
-    <section className="relative w-full overflow-hidden bg-gradient-to-br from-sky-50 via-blue-50/70 to-indigo-50/40 text-slate-900 border-b border-blue-100/80">
-      {/* 1. Full Background Image with Integrated Multi-stop Fading Gradients (Light Blue Theme) */}
-      <div className="absolute inset-0 pointer-events-none select-none overflow-hidden">
-        <img
-          src={lightBlueHeroImg}
-          alt="PSU Tracking Operations Desk"
-          referrerPolicy="no-referrer"
-          className="w-full h-full object-cover object-center transform scale-105 transition-transform duration-1000 opacity-35 filter contrast-105"
-        />
-
-        {/* Horizontal Gradient Overlay: Clean luminous soft blue fade for high readability */}
-        <div className="absolute inset-0 bg-gradient-to-r from-white/95 via-sky-50/85 to-blue-100/40" />
-
-        {/* Ambient Top Subtle Vignette */}
-        <div className="absolute top-0 inset-x-0 h-16 bg-gradient-to-b from-white/60 to-transparent" />
-
-        {/* Bottom Seamless Gradient Fade: Melts directly into page canvas (#F4F7FB) */}
-        <div className="absolute bottom-0 inset-x-0 h-40 sm:h-56 bg-gradient-to-b from-transparent via-[#F4F7FB]/70 to-[#F4F7FB]" />
-      </div>
-
-      {/* Top Editorial Ribbon */}
-      <div className="relative z-10 bg-white/85 backdrop-blur-md text-blue-900 px-4 sm:px-8 py-2.5 flex flex-wrap items-center justify-between text-[10px] sm:text-[11px] font-bold tracking-[0.2em] uppercase border-b border-blue-100 shadow-2xs">
-        <div className="flex items-center space-x-2">
-          <span className="w-2 h-2 rounded-full bg-blue-600 animate-pulse" />
-          <span className="text-slate-900 font-extrabold">PRECISION TRAFFIC LOGISTICS &bull; ASIA PACIFIC</span>
-          <span className="hidden md:inline text-blue-600/80">&bull; REAL-TIME REVISION DISPATCH</span>
-        </div>
-        <div className="flex items-center space-x-4 text-blue-900">
-          <span className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-blue-50 border border-blue-200/80 font-mono text-[10px]">
-            <span className={`w-1.5 h-1.5 rounded-full ${appsScriptConnected ? 'bg-blue-600' : 'bg-amber-500'}`} />
-            {appsScriptConnected ? 'API SYNCHRONIZED' : 'API STANDBY'}
-          </span>
-        </div>
-      </div>
-
-      {/* Main Content Area */}
-      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 sm:pt-14 pb-20 sm:pb-28">
-        <div className="max-w-2xl space-y-6">
-          <div className="space-y-4">
-            <div className="inline-flex items-center gap-2 px-3 py-1 bg-blue-100/90 text-blue-900 border border-blue-200 rounded-full text-[10px] font-bold tracking-[0.25em] uppercase shadow-2xs">
-              <Sparkles className="w-3 h-3 text-blue-600" />
-              <span>PSU TRACKING AUTOMATION</span>
-            </div>
-
-            <h1 className="font-display text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-[-0.03em] text-slate-900 leading-[0.98] uppercase">
-              PROJECT LOGISTIC
-              <br />
-              <span className="text-blue-600">AND TRACKER</span>
-            </h1>
-
-            <div className="w-14 h-1.5 bg-blue-600 rounded-full mt-4 mb-3" />
-
-            <p className="text-sm sm:text-base text-slate-600 leading-relaxed font-normal max-w-lg">
-              Instant Outlook email extraction (.msg &amp; .eml), automated multi-project recognition, and direct real-time synchronization to your Google Sheet.
-            </p>
+    <header
+      className={`sticky top-0 z-50 transition-all duration-300 ${
+        isScrolled
+          ? 'bg-white/95 dark:bg-[#0B1736]/95 backdrop-blur-xl border-b border-blue-100 dark:border-[#1C3565] shadow-md shadow-blue-900/5 dark:shadow-black/20 text-slate-900 dark:text-white'
+          : 'bg-white/85 dark:bg-[#0B1736]/85 backdrop-blur-md border-b border-blue-100/70 dark:border-[#1C3565]/80 text-slate-900 dark:text-white'
+      }`}
+    >
+      <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 h-14 sm:h-16 flex items-center justify-between gap-3">
+        {/* Left: Brand Identity */}
+        <div className="flex items-center space-x-2.5 sm:space-x-3 shrink-0">
+          <div className="w-8 h-8 sm:w-8.5 sm:h-8.5 bg-blue-600 dark:bg-amber-500 text-white dark:text-slate-950 rounded-lg flex items-center justify-center font-display font-extrabold text-xs sm:text-sm tracking-tighter shadow-xs transition-transform duration-300 hover:scale-105">
+            PSU
           </div>
-
-          {/* Action Buttons */}
-          <div className="flex flex-wrap items-center gap-3 pt-2">
-            <button
-              id="hero-log-psu-btn"
-              type="button"
-              onClick={onLogPsuClick}
-              className="px-7 py-3.5 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white text-xs font-bold uppercase tracking-[0.2em] rounded-lg transition-all shadow-md shadow-blue-500/25 hover:shadow-lg hover:shadow-blue-500/35 active:scale-[0.98] flex items-center gap-2 group cursor-pointer"
-            >
-              <span>LOG PSU NOW</span>
-              <ArrowRight className="w-3.5 h-3.5 text-white transition-transform group-hover:translate-x-1" />
-            </button>
-
-            <button
-              id="hero-explore-sheet-btn"
-              type="button"
-              onClick={onExploreSheetClick}
-              className="px-6 py-3.5 bg-white hover:bg-blue-50/80 text-blue-900 border border-blue-200 hover:border-blue-300 text-xs font-bold uppercase tracking-[0.2em] rounded-lg transition-all shadow-2xs active:scale-[0.98] flex items-center gap-2 cursor-pointer"
-            >
-              <FileSpreadsheet className="w-3.5 h-3.5 text-blue-600" />
-              <span>EXPLORE LIVE SHEET</span>
-            </button>
-          </div>
-
-          {/* Quick Micro Status Badges */}
-          <div className="pt-2 flex items-center gap-6 text-[11px] font-bold uppercase tracking-wider text-slate-600">
+          <div>
             <div className="flex items-center gap-1.5">
-              <CheckCircle2 className="w-3.5 h-3.5 text-blue-600" />
-              <span>100% OCR ACCURACY</span>
+              <span className="font-display font-bold text-xs sm:text-[13px] lg:text-sm text-slate-900 dark:text-white tracking-[0.04em] uppercase whitespace-nowrap">
+                SCH <span className="text-blue-600 dark:text-amber-400 font-bold">Project Tracker</span>
+              </span>
+              <span className="px-1.5 py-0.2 text-[8.5px] font-bold tracking-wider bg-blue-50 dark:bg-amber-400/20 text-blue-700 dark:text-amber-300 rounded-full border border-blue-200 dark:border-amber-400/40 uppercase font-mono">
+                3.0
+              </span>
             </div>
-            <div className="flex items-center gap-1.5">
-              <Zap className="w-3.5 h-3.5 text-sky-500" />
-              <span>ZERO-LATENCY SYNC</span>
-            </div>
+            <span className="text-[9px] text-slate-500 dark:text-slate-400 font-medium tracking-wider uppercase block -mt-0.5 hidden sm:block whitespace-nowrap">
+              PSU Tracking Automation &bull; v3.0
+            </span>
           </div>
         </div>
 
-        {/* Floating Module Cards Over the Gradient Transition */}
-        <div className="mt-12 sm:mt-16 grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
-          {/* Card 1: Outlook Email Parser */}
-          <div
-            onClick={onUploadClick}
-            className="group cursor-pointer bg-white/90 hover:bg-white backdrop-blur-md border border-blue-100 hover:border-blue-300 p-4 sm:p-5 rounded-2xl transition-all flex items-center gap-4 shadow-sm hover:shadow-md"
+        {/* Center: Navigation Dock (Floating Pill) */}
+        <nav className="flex items-center gap-1 p-1 bg-slate-100/90 dark:bg-[#081229] backdrop-blur-md rounded-full border border-slate-200/90 dark:border-[#1C3565] shadow-inner">
+          <button
+            id="tab-btn-entry"
+            type="button"
+            onClick={() => onSelectTab('entry')}
+            className={`group relative inline-flex items-center gap-1.5 h-8 px-3.5 rounded-full text-xs font-semibold tracking-wide transition-all duration-200 transform hover:-translate-y-0.5 active:scale-95 cursor-pointer ${
+              activeTab === 'entry'
+                ? 'bg-blue-600 dark:bg-amber-500 text-white dark:text-slate-950 shadow-sm shadow-blue-500/30 dark:shadow-amber-500/25 font-bold'
+                : 'bg-transparent text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-amber-300 hover:bg-white/80 dark:hover:bg-[#102046]'
+            }`}
           >
-            <div className="w-16 h-20 sm:w-18 sm:h-22 rounded-xl overflow-hidden shrink-0 border border-blue-100 bg-blue-50">
-              <img
-                src={blueParserImg}
-                alt="Outlook Email Parser"
-                referrerPolicy="no-referrer"
-                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-              />
-            </div>
-            <div className="flex-1 min-w-0">
-              <div className="text-[10px] font-bold tracking-[0.2em] uppercase text-blue-600">
-                MODULE 01
-              </div>
-              <h3 className="font-display font-bold text-sm sm:text-base uppercase tracking-tight text-slate-900 group-hover:text-blue-600 transition-colors">
-                EMAIL &amp; PDF PARSER
-              </h3>
-              <p className="text-xs text-slate-500 mt-1 line-clamp-2 leading-relaxed">
-                Automated extraction of projects, schedules &amp; targeted Page 1 OCR crop.
-              </p>
-              <div className="mt-2 text-[11px] font-bold uppercase tracking-wider text-blue-600 flex items-center gap-1 group-hover:translate-x-1 transition-transform">
-                <span>START PARSING</span>
-                <ArrowRight className="w-3 h-3 text-blue-600" />
-              </div>
-            </div>
+            <FileText className="w-3.5 h-3.5 transition-transform duration-200 group-hover:scale-110" />
+            <span>PSU Entry</span>
+            {activeTab === 'entry' && (
+              <span className="w-1.5 h-1.5 rounded-full bg-sky-200 dark:bg-slate-900 shadow-xs animate-pulse" />
+            )}
+          </button>
+
+          <button
+            id="tab-btn-mirror"
+            type="button"
+            onClick={() => onSelectTab('mirror')}
+            className={`group relative inline-flex items-center gap-1.5 h-8 px-3.5 rounded-full text-xs font-semibold tracking-wide transition-all duration-200 transform hover:-translate-y-0.5 active:scale-95 cursor-pointer ${
+              activeTab === 'mirror'
+                ? 'bg-blue-600 dark:bg-amber-500 text-white dark:text-slate-950 shadow-sm shadow-blue-500/30 dark:shadow-amber-500/25 font-bold'
+                : 'bg-transparent text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-amber-300 hover:bg-white/80 dark:hover:bg-[#102046]'
+            }`}
+          >
+            <FileSpreadsheet className={`w-3.5 h-3.5 transition-transform duration-200 group-hover:scale-110 ${
+              activeTab === 'mirror' ? 'text-white dark:text-slate-950' : 'text-blue-600 dark:text-amber-400 group-hover:text-blue-700 dark:group-hover:text-amber-300'
+            }`} />
+            <span>Sheet Mirror</span>
+            <span className="hidden sm:inline-flex px-1.5 py-0.2 text-[8.5px] font-bold bg-amber-100 dark:bg-amber-400/20 text-amber-800 dark:text-amber-300 rounded-full border border-amber-200 dark:border-amber-400/40">
+              LIVE
+            </span>
+          </button>
+        </nav>
+
+        {/* Right: Actions */}
+        <div className="flex items-center space-x-1 sm:space-x-1.5 shrink-0">
+          {/* Manila Time Clock */}
+          <div className="hidden xl:flex items-center gap-1.5 text-[10px] font-mono text-slate-600 dark:text-slate-300 px-2.5 py-1 bg-slate-100 dark:bg-[#102046] rounded-full border border-slate-200 dark:border-[#1C3565] mr-1">
+            <Clock className="w-3 h-3 text-slate-500 dark:text-amber-400" />
+            <span>{manilaClock || 'MNL TIME'}</span>
           </div>
 
-          {/* Card 2: Live Sheet Mirror */}
-          <div
-            onClick={onExploreSheetClick}
-            className="group cursor-pointer bg-white/90 hover:bg-white backdrop-blur-md border border-blue-100 hover:border-blue-300 p-4 sm:p-5 rounded-2xl transition-all flex items-center gap-4 shadow-sm hover:shadow-md"
+          {/* Dark Mode Toggle Button (Navy & Gold Palette) */}
+          <button
+            type="button"
+            id="theme-toggle-btn"
+            onClick={toggleTheme}
+            title={isDark ? 'Switch to Light Mode' : 'Switch to Dark Mode (Navy Blue & Gold)'}
+            className={`group inline-flex items-center gap-1.5 h-8 px-2.5 sm:px-3 rounded-full text-xs font-semibold tracking-wide transition-all duration-200 transform hover:-translate-y-0.5 active:scale-95 cursor-pointer ${
+              isDark
+                ? 'bg-[#102046] hover:bg-[#162C5C] text-amber-300 border border-amber-400/40 shadow-xs shadow-amber-400/10'
+                : 'bg-slate-50 hover:bg-slate-100 text-slate-700 border border-slate-200'
+            }`}
           >
-            <div className="w-16 h-20 sm:w-18 sm:h-22 rounded-xl overflow-hidden shrink-0 border border-blue-100 bg-blue-50">
-              <img
-                src={blueSheetImg}
-                alt="Google Sheet Mirror"
-                referrerPolicy="no-referrer"
-                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-              />
-            </div>
-            <div className="flex-1 min-w-0">
-              <div className="text-[10px] font-bold tracking-[0.2em] uppercase text-blue-600">
-                MODULE 02
-              </div>
-              <h3 className="font-display font-bold text-sm sm:text-base uppercase tracking-tight text-slate-900 group-hover:text-blue-600 transition-colors">
-                GOOGLE SHEET MIRROR
-              </h3>
-              <p className="text-xs text-slate-500 mt-1 line-clamp-2 leading-relaxed">
-                Direct 13-column bidirectional Apps Script reflection with instant metrics.
-              </p>
-              <div className="mt-2 text-[11px] font-bold uppercase tracking-wider text-blue-600 flex items-center gap-1 group-hover:translate-x-1 transition-transform">
-                <span>OPEN MIRROR</span>
-                <ArrowRight className="w-3 h-3 text-blue-600" />
-              </div>
-            </div>
-          </div>
+            {isDark ? (
+              <>
+                <Moon className="w-3.5 h-3.5 text-amber-400 fill-amber-400/30 transition-transform duration-300 group-hover:-rotate-12" />
+                <span className="font-mono text-[11px] font-bold text-amber-300 hidden sm:inline">Navy &amp; Gold</span>
+              </>
+            ) : (
+              <>
+                <Sun className="w-3.5 h-3.5 text-amber-500 transition-transform duration-300 group-hover:rotate-90" />
+                <span className="font-mono text-[11px] text-slate-700 hidden sm:inline">Dark Mode</span>
+              </>
+            )}
+          </button>
 
-          {/* Card 3: Re-PSU & Revision Monitor */}
-          <div
-            onClick={onViewRevisionsClick}
-            className="group cursor-pointer bg-white/90 hover:bg-white backdrop-blur-md border border-blue-100 hover:border-blue-300 p-4 sm:p-5 rounded-2xl transition-all flex items-center gap-4 shadow-sm hover:shadow-md"
+          {/* Google Sheet Link */}
+          <a
+            href={sheetUrl || FIXED_SPREADSHEET_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            title="Open Google Sheet in new tab"
+            className="group inline-flex items-center gap-1.5 h-8 px-2.5 sm:px-3 rounded-full text-xs font-semibold tracking-wide text-slate-700 hover:text-blue-700 bg-transparent hover:bg-blue-50/80 transition-all duration-200 transform hover:-translate-y-0.5 active:scale-95 cursor-pointer"
           >
-            <div className="w-16 h-20 sm:w-18 sm:h-22 rounded-xl overflow-hidden shrink-0 border border-blue-100 bg-blue-50">
-              <img
-                src={heroImg}
-                alt="Re-PSU Revision Engine"
-                referrerPolicy="no-referrer"
-                className="w-full h-full object-cover object-bottom filter contrast-105 group-hover:scale-105 transition-transform duration-500"
-              />
-            </div>
-            <div className="flex-1 min-w-0">
-              <div className="text-[10px] font-bold tracking-[0.2em] uppercase text-blue-600">
-                MODULE 03
-              </div>
-              <h3 className="font-display font-bold text-sm sm:text-base uppercase tracking-tight text-slate-900 group-hover:text-blue-600 transition-colors">
-                RE-PSU &amp; AUDIT LOGS
-              </h3>
-              <p className="text-xs text-slate-500 mt-1 line-clamp-2 leading-relaxed">
-                Smart version tracking (Initial, v1, v2+) with automated revision validation.
-              </p>
-              <div className="mt-2 text-[11px] font-bold uppercase tracking-wider text-blue-600 flex items-center gap-1 group-hover:translate-x-1 transition-transform">
-                <span>VIEW REVISIONS</span>
-                <ArrowRight className="w-3 h-3 text-blue-600" />
-              </div>
-            </div>
-          </div>
+            <span className="hidden lg:inline">{sheetTitle || FIXED_SHEET_NAME}</span>
+            <span className="lg:hidden">Sheet</span>
+            <ExternalLink className="w-3 h-3 text-slate-400 group-hover:text-blue-600 transition-all duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+          </a>
+
+          {/* Settings Modal */}
+          {onOpenSheetSettings && (
+            <button
+              type="button"
+              id="navbar-change-sheet-link-btn"
+              onClick={onOpenSheetSettings}
+              title="Sheet Link & Tab Settings (Password protected)"
+              className="group inline-flex items-center gap-1.5 h-8 px-2.5 sm:px-3 rounded-full text-xs font-semibold tracking-wide text-slate-700 hover:text-slate-900 bg-transparent hover:bg-slate-100 transition-all duration-200 transform hover:-translate-y-0.5 active:scale-95 cursor-pointer"
+            >
+              <Lock className="w-2.5 h-2.5 text-slate-400 group-hover:text-slate-600" />
+              <Settings className="w-3.5 h-3.5 text-slate-500 group-hover:text-slate-800 transition-transform duration-300 group-hover:rotate-45" />
+              <span className="hidden md:inline">Settings</span>
+            </button>
+          )}
+
+          {/* Apps Script Status */}
+          <button
+            id="apps-script-status-btn"
+            type="button"
+            onClick={onOpenAppsScriptSetup}
+            title="Google Apps Script API status (Click to configure)"
+            className="group inline-flex items-center gap-1.5 h-8 px-2.5 sm:px-3 rounded-full text-xs font-semibold tracking-wide text-slate-700 hover:text-slate-900 bg-slate-50 hover:bg-slate-100 border border-slate-200 transition-all duration-200 transform hover:-translate-y-0.5 active:scale-95 cursor-pointer"
+          >
+            <span
+              className={`w-2 h-2 rounded-full ${
+                appsScriptConnected
+                  ? 'bg-emerald-500 shadow-xs'
+                  : 'bg-amber-400 animate-pulse'
+              }`}
+            />
+            <span className="hidden sm:inline text-slate-500 text-[10px]">API:</span>
+            <span className="text-[11px] font-mono font-medium">{appsScriptConnected ? 'Online' : 'Setup'}</span>
+          </button>
         </div>
       </div>
-    </section>
+    </header>
   );
 };
