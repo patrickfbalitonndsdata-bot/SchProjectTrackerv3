@@ -72,11 +72,11 @@ export const Navbar: React.FC<NavbarProps> = ({
                 SCH <span className="text-blue-600 font-bold">Project Tracker</span>
               </span>
               <span className="px-1.5 py-0.2 text-[8.5px] font-bold tracking-wider bg-blue-50 text-blue-700 rounded-full border border-blue-200 uppercase font-mono">
-                2.5
+                3.0
               </span>
             </div>
             <span className="text-[9px] text-slate-500 font-medium tracking-wider uppercase block -mt-0.5 hidden sm:block whitespace-nowrap">
-              PSU Tracking Automation &bull; v2.5
+              PSU Tracking Automation &bull; v3.0
             </span>
           </div>
         </div>
