@@ -266,9 +266,10 @@ export default function App() {
       rawProjects.map(async (proj) => {
         let pVersion = proj.version || defaultInitialVersion;
         let existingCount = 0;
+        let curVersion = defaultInitialVersion;
         if (proj.projectNumber && proj.projectNumber.trim()) {
           try {
-            const { version, existingCount: count } = await calculateProjectVersion(
+            const { version, existingCount: count, currentVersion } = await calculateProjectVersion(
               sheetConfig.spreadsheetId,
               sheetConfig.sheetName,
               proj.projectNumber.trim(),
@@ -279,9 +280,18 @@ export default function App() {
             );
             pVersion = version;
             existingCount = count;
+            curVersion = currentVersion;
           } catch (err) {
             console.warn('Could not auto-calculate version on parse for', proj.projectNumber, err);
           }
+        }
+        if (proj.jobType === 'For Correction') {
+          return {
+            ...proj,
+            version: curVersion,
+            jobType: 'For Correction',
+            existingCount,
+          };
         }
         const pIsRev = isRevisedVersion(pVersion);
         return {
