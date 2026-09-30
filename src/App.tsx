@@ -493,7 +493,7 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-[#F4F7FB] text-slate-900 flex flex-col font-sans selection:bg-blue-100 selection:text-blue-900">
+    <div className="min-h-screen bg-[#F4F7FB] dark:bg-[#060D1E] text-slate-900 dark:text-[#F8FAFC] flex flex-col font-sans selection:bg-blue-100 selection:text-blue-900 dark:selection:bg-amber-400/30 dark:selection:text-amber-200 transition-colors duration-200">
       {/* Top Navbar */}
       <Navbar
         activeTab={activeTab}
@@ -527,12 +527,12 @@ export default function App() {
       >
         {/* Toast alert */}
         {toastMessage && (
-          <div className="bg-slate-900 text-white px-4 py-3 rounded-xl shadow-xl border border-slate-700 flex items-center justify-between animate-in fade-in slide-in-from-top-2 duration-200">
+          <div className="bg-slate-900 dark:bg-[#0B1736] text-white px-4 py-3 rounded-xl shadow-xl border border-slate-700 dark:border-amber-400/40 flex items-center justify-between animate-in fade-in slide-in-from-top-2 duration-200">
             <div className="flex items-center space-x-3 text-xs">
-              <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+              <CheckCircle2 className="w-4 h-4 text-emerald-400 dark:text-amber-400 shrink-0" />
               <div>
                 <span className="font-bold tracking-wide uppercase">{toastMessage.title}: </span>
-                <span className="text-slate-300 font-normal">{toastMessage.desc}</span>
+                <span className="text-slate-300 dark:text-slate-200 font-normal">{toastMessage.desc}</span>
               </div>
             </div>
             <button
@@ -546,19 +546,19 @@ export default function App() {
 
         {/* Apps Script Setup Banner if not configured */}
         {!isConnected && (
-          <div className="p-4 sm:p-5 bg-gradient-to-r from-blue-900 via-blue-800 to-indigo-900 text-white border border-blue-700/60 rounded-2xl flex flex-col md:flex-row items-start md:items-center justify-between gap-4 shadow-md">
+          <div className="p-4 sm:p-5 bg-gradient-to-r from-blue-900 via-blue-800 to-indigo-900 dark:from-[#060D1E] dark:via-[#0E1C3F] dark:to-[#142A5C] text-white border border-blue-700/60 dark:border-amber-400/30 rounded-2xl flex flex-col md:flex-row items-start md:items-center justify-between gap-4 shadow-md">
             <div className="flex items-start gap-3.5">
-              <div className="p-2.5 bg-blue-950/80 border border-blue-700/70 rounded-xl text-sky-300 shrink-0 mt-0.5">
-                <Zap className="w-5 h-5 text-sky-300 animate-pulse" />
+              <div className="p-2.5 bg-blue-950/80 dark:bg-[#081229] border border-blue-700/70 dark:border-amber-400/40 rounded-xl text-sky-300 dark:text-amber-400 shrink-0 mt-0.5">
+                <Zap className="w-5 h-5 text-sky-300 dark:text-amber-400 animate-pulse" />
               </div>
               <div>
                 <h4 className="text-xs font-bold uppercase tracking-wider text-white flex items-center gap-2">
                   <span>Connect Google Apps Script Web App API</span>
-                  <span className="px-2 py-0.5 bg-blue-800/80 text-blue-200 text-[9px] rounded-sm font-bold tracking-widest uppercase border border-blue-600">
+                  <span className="px-2 py-0.5 bg-blue-800/80 dark:bg-amber-400/20 text-blue-200 dark:text-amber-300 text-[9px] rounded-sm font-bold tracking-widest uppercase border border-blue-600 dark:border-amber-400/40">
                     No Sign-In Required
                   </span>
                 </h4>
-                <p className="text-xs text-blue-100/90 mt-1 leading-relaxed">
+                <p className="text-xs text-blue-100/90 dark:text-slate-300 mt-1 leading-relaxed">
                   The app communicates via: <strong className="text-white">React &rarr; Google Apps Script &rarr; Private Google Sheet</strong>.
                   Paste the deployment script into your Google Sheet to enable direct automated logging.
                 </p>
@@ -569,17 +569,17 @@ export default function App() {
               <button
                 type="button"
                 onClick={handleCopyScriptFromBanner}
-                className="px-3.5 py-2 bg-blue-950/90 border border-blue-600 hover:bg-blue-900 text-white rounded-lg text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 transition-all shadow-xs cursor-pointer"
+                className="px-3.5 py-2 bg-blue-950/90 dark:bg-[#0B1736] border border-blue-600 dark:border-amber-400/50 hover:bg-blue-900 dark:hover:bg-[#102046] text-white dark:text-amber-300 rounded-lg text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 transition-all shadow-xs cursor-pointer"
               >
-                {codeCopiedBanner ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5 text-blue-300" />}
+                {codeCopiedBanner ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5 text-blue-300 dark:text-amber-400" />}
                 <span>{codeCopiedBanner ? 'Copied Script!' : 'Copy Script'}</span>
               </button>
               <button
                 type="button"
                 onClick={handleRequestAppsScriptSetup}
-                className="px-4 py-2 bg-blue-500 hover:bg-blue-400 active:bg-blue-600 text-white rounded-lg text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 transition-all shadow-xs cursor-pointer"
+                className="px-4 py-2 bg-blue-500 hover:bg-blue-400 active:bg-blue-600 dark:bg-amber-500 dark:hover:bg-amber-400 dark:text-slate-950 dark:font-extrabold text-white rounded-lg text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 transition-all shadow-xs cursor-pointer"
               >
-                <Zap className="w-3.5 h-3.5 text-white" />
+                <Zap className="w-3.5 h-3.5 text-white dark:text-slate-950" />
                 <span>Setup Web App URL</span>
               </button>
             </div>
@@ -593,22 +593,22 @@ export default function App() {
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
               {/* Left Column: File Uploader & Email Details (5 cols on large) */}
               <div className="lg:col-span-5 space-y-4">
-                <div className="bg-white border border-slate-200/90 rounded-2xl p-5 sm:p-6 shadow-2xs">
+                <div className="bg-white dark:bg-[#0B1736] border border-slate-200/90 dark:border-[#1C3565] rounded-2xl p-5 sm:p-6 shadow-2xs">
                   <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center space-x-2.5">
-                      <div className="w-8 h-8 bg-blue-600 text-white flex items-center justify-center rounded-lg shadow-xs">
-                        <Sparkles className="w-4 h-4 text-white" />
+                      <div className="w-8 h-8 bg-blue-600 dark:bg-amber-500 text-white dark:text-slate-950 flex items-center justify-center rounded-lg shadow-xs">
+                        <Sparkles className="w-4 h-4 text-white dark:text-slate-950" />
                       </div>
                       <div>
-                        <h2 className="text-xs font-bold uppercase tracking-wider text-slate-900 font-display">
+                        <h2 className="text-xs font-bold uppercase tracking-wider text-slate-900 dark:text-white font-display">
                           Outlook Email &amp; PDF Parser
                         </h2>
-                        <span className="text-[10px] text-slate-500 font-medium tracking-wide">
+                        <span className="text-[10px] text-slate-500 dark:text-slate-400 font-medium tracking-wide">
                           Instant field extraction &amp; Page 1 OCR crop
                         </span>
                       </div>
                     </div>
-                    <span className="text-[10px] text-blue-700 font-bold uppercase tracking-widest px-2.5 py-1 bg-blue-50 rounded-md border border-blue-200 shadow-2xs">Step 1</span>
+                    <span className="text-[10px] text-blue-700 dark:text-amber-300 font-bold uppercase tracking-widest px-2.5 py-1 bg-blue-50 dark:bg-amber-400/20 rounded-md border border-blue-200 dark:border-amber-400/40 shadow-2xs">Step 1</span>
                   </div>
 
                   <FileUploader
@@ -644,20 +644,20 @@ export default function App() {
             <section id="recent-sheet-section" className="pt-2 scroll-mt-20">
               <div className="flex items-center justify-between mb-3 px-1">
                 <div>
-                  <h3 className="text-xs font-bold uppercase tracking-wider text-slate-900 flex items-center gap-2">
+                  <h3 className="text-xs font-bold uppercase tracking-wider text-slate-900 dark:text-white flex items-center gap-2">
                     <span>Recent Sheet Activity</span>
-                    <span className="px-2 py-0.5 text-[9px] font-bold bg-blue-50 text-blue-700 rounded-md border border-blue-200 uppercase font-mono">
+                    <span className="px-2 py-0.5 text-[9px] font-bold bg-blue-50 dark:bg-amber-400/20 text-blue-700 dark:text-amber-300 rounded-md border border-blue-200 dark:border-amber-400/40 uppercase font-mono">
                       Audit Stream
                     </span>
                   </h3>
-                  <p className="text-xs text-slate-500 mt-0.5">Quick view of recently logged entries in Google Sheets</p>
+                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Quick view of recently logged entries in Google Sheets</p>
                 </div>
                 <button
                   type="button"
                   onClick={() => setActiveTab('mirror')}
-                  className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-bold uppercase tracking-wider text-blue-700 hover:text-white bg-white hover:bg-blue-600 border border-blue-300 hover:border-blue-600 rounded-lg transition-all shadow-2xs group cursor-pointer"
+                  className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-bold uppercase tracking-wider text-blue-700 hover:text-white dark:text-amber-300 dark:hover:text-slate-950 bg-white hover:bg-blue-600 dark:bg-[#0B1736] dark:hover:bg-amber-500 border border-blue-300 hover:border-blue-600 dark:border-amber-400/40 dark:hover:border-amber-500 rounded-lg transition-all shadow-2xs group cursor-pointer"
                 >
-                  <FileSpreadsheet className="w-3.5 h-3.5 text-blue-600 group-hover:text-white transition-colors" />
+                  <FileSpreadsheet className="w-3.5 h-3.5 text-blue-600 dark:text-amber-400 group-hover:text-white dark:group-hover:text-slate-950 transition-colors" />
                   <span>Open Full Sheet Mirror Viewer Tab &rarr;</span>
                 </button>
               </div>
@@ -683,33 +683,33 @@ export default function App() {
       </main>
 
       {/* Unified Editorial Light Blue / Slate Footer */}
-      <footer className="mt-16 border-t border-blue-100 bg-white/90 backdrop-blur-md text-slate-600 py-6">
+      <footer className="mt-16 border-t border-blue-100 dark:border-[#1C3565] bg-white/90 dark:bg-[#081229] backdrop-blur-md text-slate-600 dark:text-slate-400 py-6">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 space-y-3">
           <div className="flex flex-col md:flex-row items-center justify-between gap-3 text-xs">
             <div className="flex items-center space-x-2.5 flex-wrap justify-center md:justify-start">
-              <span className="font-display font-bold text-slate-900 text-xs tracking-wider uppercase">
-                SCH <span className="text-blue-600">Project Tracker</span>
+              <span className="font-display font-bold text-slate-900 dark:text-white text-xs tracking-wider uppercase">
+                SCH <span className="text-blue-600 dark:text-amber-400">Project Tracker</span>
               </span>
-              <span className="text-slate-300 font-mono text-[10px]">&bull;</span>
-              <span className="text-slate-500 text-[11px]">
+              <span className="text-slate-300 dark:text-slate-700 font-mono text-[10px]">&bull;</span>
+              <span className="text-slate-500 dark:text-slate-400 text-[11px]">
                 &copy; {new Date().getFullYear()} All rights reserved.
               </span>
             </div>
 
             <div className="flex items-center space-x-3 text-slate-500 text-[10.5px] font-mono flex-wrap justify-center">
-              <span className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-blue-50 border border-blue-200 text-blue-800">
-                <span className="w-1.5 h-1.5 rounded-full bg-blue-600 animate-pulse" />
+              <span className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-blue-50 dark:bg-[#102046] border border-blue-200 dark:border-amber-400/40 text-blue-800 dark:text-amber-300">
+                <span className="w-1.5 h-1.5 rounded-full bg-blue-600 dark:bg-amber-400 animate-pulse" />
                 Apps Script Connected
               </span>
             </div>
           </div>
 
           {/* Discreet Developer Watermark */}
-          <div className="pt-2.5 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-1 text-[10px] text-slate-400 font-mono select-none">
-            <span className="tracking-wider uppercase text-[9.5px] text-slate-400">
+          <div className="pt-2.5 border-t border-slate-100 dark:border-[#14274C] flex flex-col sm:flex-row items-center justify-between gap-1 text-[10px] text-slate-400 font-mono select-none">
+            <span className="tracking-wider uppercase text-[9.5px] text-slate-400 dark:text-slate-500">
               Direct Google Sheet Integration
             </span>
-            <span className="tracking-wide text-slate-500 hover:text-blue-600 transition-colors">
+            <span className="tracking-wide text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-amber-400 transition-colors">
               Developers: Patrick Franz O.B. and John B.
             </span>
           </div>
