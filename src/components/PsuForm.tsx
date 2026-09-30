@@ -99,7 +99,7 @@ export const PsuForm: React.FC<PsuFormProps> = ({
 
   // Per-project version checking status map
   const [projectVersionStatuses, setProjectVersionStatuses] = useState<
-    Record<string, { count: number; suggestedVersion: string; loading?: boolean }>
+    Record<string, { count: number; suggestedVersion: string; loading?: boolean; isCorrection?: boolean }>
   >({});
 
   const fallbackConfirmedRef = React.useRef<Set<string>>(new Set());
@@ -167,13 +167,29 @@ export const PsuForm: React.FC<PsuFormProps> = ({
         finalVal = 'Initial';
       }
       const modified = { ...p, [field]: finalVal };
+      if (field === 'jobType') {
+        if (value === 'For Correction') {
+          // Only implement this for "For Correction" Job Type:
+          // Retain current/recent version
+          const status = projectVersionStatuses[id];
+          const priorCount = status?.count ?? 0;
+          if (priorCount > 0) {
+            modified.version = getCurrentProjectVersion(priorCount, formData.region);
+          } else if (!modified.version || isRevisedVersion(modified.version)) {
+            modified.version = 'Initial';
+          }
+        }
+      }
       if (field === 'version') {
-        const isRev = isRevisedVersion(finalVal);
-        modified.jobType = isRev
-          ? 'Re-PSU (Revised)'
-          : modified.jobType === 'Re-PSU (Revised)'
-          ? 'New Installs'
-          : modified.jobType || 'New Installs';
+        // Only auto-switch jobType if NOT 'For Correction'
+        if (modified.jobType !== 'For Correction') {
+          const isRev = isRevisedVersion(finalVal);
+          modified.jobType = isRev
+            ? 'Re-PSU (Revised)'
+            : modified.jobType === 'Re-PSU (Revised)'
+            ? 'New Installs'
+            : modified.jobType || 'New Installs';
+        }
       }
       return modified;
     });
@@ -217,7 +233,7 @@ export const PsuForm: React.FC<PsuFormProps> = ({
     }));
 
     try {
-      const { version, existingCount } = await calculateProjectVersion(
+      const { version, existingCount, currentVersion } = await calculateProjectVersion(
         sheetConfig.spreadsheetId,
         sheetConfig.sheetName || 'Project Tracker',
         trimmed,
@@ -226,6 +242,46 @@ export const PsuForm: React.FC<PsuFormProps> = ({
         recentEntries,
         formData.region
       );
+
+      const curProj = projectsList.find((p) => p.id === pId);
+      const isForCorrection =
+        curProj?.jobType === 'For Correction' || (!curProj && formData.jobType === 'For Correction');
+
+      // CRITICAL REQUIREMENT:
+      // When the google sheet syncs, The version of the Project Number that has a Job Type of "For Correction" Status
+      // should NOT be overwritten and will retain as the current/recent version even when synced.
+      // Only implement this for "For Correction" Job Type.
+      if (isForCorrection) {
+        const retainedVersion =
+          currentVersion ||
+          (existingCount > 0
+            ? getCurrentProjectVersion(existingCount, formData.region)
+            : curProj?.version || 'Initial');
+
+        setProjectVersionStatuses((prev) => ({
+          ...prev,
+          [pId]: {
+            count: existingCount,
+            suggestedVersion: retainedVersion,
+            isCorrection: true,
+            loading: false,
+          },
+        }));
+
+        const updated = projectsList.map((p) =>
+          p.id === pId ? { ...p, version: retainedVersion, jobType: 'For Correction' } : p
+        );
+        const primary = updated[0];
+        onChange({
+          ...formData,
+          projectNumber: primary?.projectNumber || '',
+          study: primary?.study || '',
+          version: primary?.version || retainedVersion,
+          jobType: 'For Correction',
+          projects: updated,
+        });
+        return;
+      }
 
       setProjectVersionStatuses((prev) => ({
         ...prev,
@@ -328,6 +384,9 @@ export const PsuForm: React.FC<PsuFormProps> = ({
 
       // Normal flow (initial or already confirmed)
       const currentProj = projectsList.find((item) => item.id === pId);
+      if (currentProj && currentProj.jobType === 'For Correction') {
+        return;
+      }
       if (
         currentProj &&
         (!currentProj.version ||
@@ -537,6 +596,8 @@ export const PsuForm: React.FC<PsuFormProps> = ({
       const unconfirmedDups: ExistingProjectReentryInfo[] = [];
       for (const proj of validProjects) {
         const pNum = proj.projectNumber.trim();
+        // If already designated as "For Correction", its current version is retained and approved
+        if (proj.jobType === 'For Correction') continue;
         if (confirmedProjects.current.has(pNum.toLowerCase())) continue;
         const status = projectVersionStatuses[proj.id];
         if (status && status.count > 0) {
@@ -1169,14 +1230,24 @@ export const PsuForm: React.FC<PsuFormProps> = ({
                         </span>
                       ) : status ? (
                         <span className="text-[10px] mt-1 block font-medium leading-tight truncate">
-                          {status.count === 0 ? (
+                          {status.isCorrection || project.jobType === 'For Correction' ? (
+                            <span className="text-cyan-800 font-semibold inline-flex items-center gap-1">
+                              <span className="w-1.5 h-1.5 rounded-full bg-cyan-500 shrink-0" />
+                              <span>
+                                {status.count} prior &rarr;{' '}
+                                <strong>{project.version || status.suggestedVersion}</strong> (Retained for Correction)
+                              </span>
+                            </span>
+                          ) : status.count === 0 ? (
                             <span className="text-emerald-700 font-semibold">
                               1st entry &rarr; <strong>{status.suggestedVersion}</strong>
                             </span>
                           ) : (
                             <span className="text-amber-800 font-semibold inline-flex items-center gap-1">
                               <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse shrink-0" />
-                              <span>{status.count} prior &rarr; <strong>{status.suggestedVersion}</strong> (Re-PSU)</span>
+                              <span>
+                                {status.count} prior &rarr; <strong>{status.suggestedVersion}</strong> (Re-PSU)
+                              </span>
                             </span>
                           )}
                         </span>
